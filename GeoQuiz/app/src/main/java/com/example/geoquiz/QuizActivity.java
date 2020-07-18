@@ -1,9 +1,13 @@
 package com.example.geoquiz;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.DialogInterface;
+import android.text.Layout;
 import android.view.View;
 import android.widget.Button;
 import android.os.Bundle;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -14,6 +18,7 @@ public class QuizActivity extends AppCompatActivity {
     private ImageButton nextButton;
     private ImageButton prevButton;
     private TextView questionTextView;
+    private LinearLayout ll;
 
     private Question[] questionBank = new Question[] {
             new Question(R.string.question_australia, true),
@@ -39,7 +44,8 @@ public class QuizActivity extends AppCompatActivity {
         trueButton = (Button) findViewById(R.id.true_button);
         falseButton = (Button) findViewById(R.id.false_button);
         nextButton = (ImageButton) findViewById(R.id.next_button);
-        prevButton =(ImageButton) findViewById(R.id.prev_button);
+        prevButton = (ImageButton) findViewById(R.id.prev_button);
+        ll = (LinearLayout) findViewById(R.id.mainlayout);
 
         /**
          * Listeners
@@ -75,13 +81,22 @@ public class QuizActivity extends AppCompatActivity {
             }
         });
 
-        questionTextView.setOnClickListener(new View.OnClickListener() {
+        ll.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View v) {
                 updateIndex(true);
                 updateQuestion();
             }
         });
+
+//        questionTextView.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                updateIndex(true);
+//                updateQuestion();
+//            }
+//        });
 
         updateQuestion();
     }
