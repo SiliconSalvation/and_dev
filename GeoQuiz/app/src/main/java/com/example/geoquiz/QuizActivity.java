@@ -90,14 +90,6 @@ public class QuizActivity extends AppCompatActivity {
             }
         });
 
-//        questionTextView.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                updateIndex(true);
-//                updateQuestion();
-//            }
-//        });
-
         updateQuestion();
     }
 
