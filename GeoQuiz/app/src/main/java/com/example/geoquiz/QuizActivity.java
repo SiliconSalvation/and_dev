@@ -1,22 +1,21 @@
 package com.example.geoquiz;
-
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.view.View;
 import android.widget.Button;
-
 import android.os.Bundle;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 public class QuizActivity extends AppCompatActivity {
 
-    private Button mTrueButton;
-    private Button mFalseButton;
-    private Button mNextButton;
-    private TextView mQuestionTextView;
+    private Button trueButton;
+    private Button falseButton;
+    private ImageButton nextButton;
+    private ImageButton prevButton;
+    private TextView questionTextView;
 
-    private Question[] mQuestionBank = new Question[] {
+    private Question[] questionBank = new Question[] {
             new Question(R.string.question_australia, true),
             new Question(R.string.question_oceans, true),
             new Question(R.string.question_mideast, false),
@@ -25,53 +24,110 @@ public class QuizActivity extends AppCompatActivity {
             new Question(R.string.question_asia, true)
     };
 
-    private int mCurrentIndex = 0;
+    private int currentIndex = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_quiz);
 
-        mQuestionTextView = (TextView) findViewById(R.id.question_text_view);
+        questionTextView = (TextView) findViewById(R.id.question_text_view);
 
+        /**
+         * Buttons
+         */
+        trueButton = (Button) findViewById(R.id.true_button);
+        falseButton = (Button) findViewById(R.id.false_button);
+        nextButton = (ImageButton) findViewById(R.id.next_button);
+        prevButton =(ImageButton) findViewById(R.id.prev_button);
 
-        mTrueButton = (Button) findViewById(R.id.true_button);
-        mFalseButton = (Button) findViewById(R.id.false_button);
-        mNextButton = (Button) findViewById(R.id.next_button);
-
-        mTrueButton.setOnClickListener(new View.OnClickListener() {
+        /**
+         * Listeners
+         */
+        trueButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                Toast t = Toast.makeText(QuizActivity.this,
-                                R.string.correct_toast,
-                                Toast.LENGTH_SHORT);
-                //t.setGravity(Gravity.TOP, 15 , 15);
-                t.show();
+                checkAnswer(true);
+                //t.setGravity(Gravity.TOP, 15 , 15);  //Doesn't Work, Cannot call setGravity on text toast now
           }
         });
 
-        mFalseButton.setOnClickListener(new View.OnClickListener() {
+        falseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(QuizActivity.this,
-                        R.string.false_toast,
-                        Toast.LENGTH_SHORT).show();
+                checkAnswer(false);
             }
         });
 
-        mNextButton.setOnClickListener(new View.OnClickListener() {
+        prevButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mCurrentIndex = (mCurrentIndex + 1) % mQuestionBank.length;
+                updateIndex(false);
+                updateQuestion();
+            }
+        });
+
+        nextButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                updateIndex(true);
+                updateQuestion();
+            }
+        });
+
+        questionTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                updateIndex(true);
                 updateQuestion();
             }
         });
 
         updateQuestion();
     }
+
+    /**
+     * Updates the index based on whether the user pressed the Next Button
+     * or Previous Button
+     * @param nextButtonPressed A boolean value indicating true if the next
+     * button was pressed or false if the prev button was pressed
+     */
+    private void updateIndex(boolean nextButtonPressed) {
+
+        if(nextButtonPressed) {
+            currentIndex++;
+            currentIndex = currentIndex % questionBank.length;
+        } else {
+            if(currentIndex == 0) { currentIndex = questionBank.length; }
+            currentIndex--;
+            currentIndex = currentIndex % questionBank.length;
+        }
+    }
+
+    /**
+     * updates the question to be displayed
+     */
     private void updateQuestion() {
-        int question = mQuestionBank[mCurrentIndex].getTextResId();
-        mQuestionTextView.setText(question);
+        int question = questionBank[currentIndex].getTextResId();
+        questionTextView.setText(question);
+    }
+
+    /**
+     * determines whether the answer is correct or not.
+     * @param userAnswer a boolean, it is true if the answer is correct
+     * or false if the answer is incorrect.
+     */
+    private void checkAnswer(boolean userAnswer) {
+        boolean answerIsTrue = questionBank[currentIndex].isAnswerTrue();
+
+        int messageResId = 0;
+
+        if (userAnswer == answerIsTrue) {
+            messageResId = R.string.correct_toast;
+        } else {
+            messageResId = R.string.false_toast;
+        }
+
+        Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show();
     }
 }
