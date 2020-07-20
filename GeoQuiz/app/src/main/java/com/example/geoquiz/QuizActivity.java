@@ -21,6 +21,7 @@ public class QuizActivity extends AppCompatActivity {
     private ImageButton nextButton;
     private ImageButton prevButton;
     private TextView questionTextView;
+
     //private LinearLayout ll;
 
     private Question[] questionBank = new Question[] {
@@ -32,13 +33,17 @@ public class QuizActivity extends AppCompatActivity {
             new Question(R.string.question_asia, true)
     };
 
-    private int currentIndex = 0;
+    private int currentIndex;
+    private int numCorrect;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate(Bundle) called");
         setContentView(R.layout.activity_quiz);
+
+        currentIndex = 0;
+        numCorrect = 0;
 
         if(savedInstanceState != null) {
             currentIndex = savedInstanceState.getInt(KEY_INDEX, 0);
@@ -133,6 +138,7 @@ public class QuizActivity extends AppCompatActivity {
         super.onSaveInstanceState(savedInstanceState);
         Log.i(TAG, "onSavedInstanceState");
         savedInstanceState.putInt(KEY_INDEX, currentIndex);
+        savedInstanceState.putInt(KEY_INDEX, numCorrect);
     }
 
     /**
@@ -168,6 +174,11 @@ public class QuizActivity extends AppCompatActivity {
                 currentIndex = questionBank.length;
             }
             currentIndex--;
+            if(numCorrect < 0) {
+                numCorrect = 1;
+            }
+            numCorrect--;
+
         }
         currentIndex = currentIndex % questionBank.length;
     }
@@ -191,12 +202,25 @@ public class QuizActivity extends AppCompatActivity {
         int messageResId = 0;
 
         if (userAnswer == answerIsTrue) {
+            numCorrect++;
             messageResId = R.string.correct_toast;
         } else {
             messageResId = R.string.false_toast;
         }
 
         Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show();
+
+        if(currentIndex == questionBank.length - 1) {
+            calculateScore();
+            numCorrect = 0;
+        }
     }
 
+    private void calculateScore() {
+        double perCorrect;
+
+        perCorrect = ((double) numCorrect / questionBank.length) * 100.0;
+
+        Toast.makeText(this, Double.toString(perCorrect), Toast.LENGTH_SHORT).show();
+    }
 }
